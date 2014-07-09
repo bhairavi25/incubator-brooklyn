@@ -30,18 +30,21 @@ import brooklyn.entity.basic.Entities;
 import brooklyn.entity.basic.EntityLocal;
 import brooklyn.entity.basic.StartableApplication;
 import brooklyn.management.Task;
+import brooklyn.management.entitlement.EntitlementContext;
+import brooklyn.management.entitlement.Entitlements;
 import brooklyn.management.ha.ManagementPlaneSyncRecord;
 import brooklyn.management.internal.ManagementContextInternal;
 import brooklyn.rest.api.ServerApi;
 import brooklyn.rest.domain.HighAvailabilitySummary;
 import brooklyn.rest.transform.HighAvailabilityTransformer;
+import brooklyn.util.text.Strings;
 import brooklyn.util.time.CountdownTimer;
 import brooklyn.util.time.Duration;
 
 public class ServerResource extends AbstractBrooklynRestResource implements ServerApi {
 
     private static final Logger log = LoggerFactory.getLogger(ServerResource.class);
-
+    
     @Override
     public void reloadBrooklynProperties() {
         brooklyn().reloadBrooklynProperties();
@@ -93,4 +96,10 @@ public class ServerResource extends AbstractBrooklynRestResource implements Serv
         ManagementPlaneSyncRecord memento = mgmt().getHighAvailabilityManager().getManagementPlaneSyncState();
         return HighAvailabilityTransformer.highAvailabilitySummary(mgmt().getManagementNodeId(), memento);
     }
+
+	@Override
+	public String getUser() {
+		EntitlementContext entitlementContext = Entitlements.getEntitlementContext();
+		return entitlementContext.user();
+	}
 }
